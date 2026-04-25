@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# uv
+uv.lock  # (optional: keep if you want reproducible builds)
+
+# Environment variables
+.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
