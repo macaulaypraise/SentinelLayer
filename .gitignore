@@ -38,3 +38,4 @@ frontend/dist/
 frontend/.vite/
 *.docx
 *.pdf
+firebase-service-account.json

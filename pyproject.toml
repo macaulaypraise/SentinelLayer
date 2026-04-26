@@ -28,6 +28,7 @@ dependencies = [
   "opentelemetry-distro>=0.47b0",
   "opentelemetry-instrumentation-sqlalchemy>=0.47b0",
   "opentelemetry-instrumentation-redis>=0.47b0",
+  "firebase-admin>=7.4.0",
 ]
 
 [dependency-groups]
