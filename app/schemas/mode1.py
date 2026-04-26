@@ -1,4 +1,3 @@
-# app/schemas/mode1.py
 from datetime import date
 
 from pydantic import BaseModel
