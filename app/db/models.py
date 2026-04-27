@@ -1,5 +1,7 @@
 import uuid
 from datetime import UTC, datetime
+from decimal import Decimal
+from enum import Enum
 
 from sqlalchemy import (
     Boolean,
@@ -79,7 +81,7 @@ class Session(Base):
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id"))
     account_id: Mapped[str | None] = mapped_column(String(128))
     phone_number: Mapped[str] = mapped_column(String(20), nullable=False)
-    transaction_amount: Mapped[float | None] = mapped_column(Numeric(18, 2))
+    transaction_amount: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     risk_score: Mapped[int] = mapped_column(Integer, nullable=False)
     recommended_action: Mapped[str] = mapped_column(String(10), nullable=False)
     mode_triggered: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -93,6 +95,10 @@ class Session(Base):
 
 class ConsentRecord(Base):
     __tablename__ = "consent_records"
+    __table_args__ = (
+        Index("idx_consent_tenant", "tenant_id"),
+        Index("idx_consent_session", "session_id"),
+    )
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id"))
     session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sessions.id"))
@@ -106,6 +112,7 @@ class ConsentRecord(Base):
 
 class Incident(Base):
     __tablename__ = "incidents"
+    __table_args__ = (Index("idx_incidents_tenant", "tenant_id"),)
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id"))
     session_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sessions.id"))
@@ -117,3 +124,15 @@ class Incident(Base):
     maps_url: Mapped[str | None] = mapped_column(Text)
     evidence_notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
+
+
+class RecommendedAction(str, Enum):
+    ALLOW = "ALLOW"
+    STEP_UP = "STEP-UP"
+    HOLD = "HOLD"
+
+
+class ConsentStatus(str, Enum):
+    GRANTED = "GRANTED"
+    DENIED = "DENIED"
+    PENDING = "PENDING"
