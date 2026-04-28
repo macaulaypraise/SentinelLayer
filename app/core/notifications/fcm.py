@@ -39,7 +39,7 @@ async def _send_fcm(token: str, title: str, body: str, data: dict[str, Any]) -> 
     await loop.run_in_executor(None, _send_fcm_sync, token, title, body, data)
 
 
-async def send_mode2_alert(payload: dict) -> None:
+async def send_mode2_alert(payload: dict[str, Any]) -> None:
     """Three-way simultaneous push — all parties notified at the same moment."""
     msg = f"LIVE FRAUD ALERT | {payload['phone']} | Trigger: {payload['trigger']}"
     await asyncio.gather(
@@ -49,7 +49,7 @@ async def send_mode2_alert(payload: dict) -> None:
     )
 
 
-async def send_preemptive_alert(payload: dict) -> None:
+async def send_preemptive_alert(payload: dict[str, Any]) -> None:
     """Fires when SIM Swap webhook received — before any fraud attempt."""
     msg = f"SIM SWAP DETECTED | {payload['phone']} | {payload.get('swap_time', '')}"
     await _send_fcm(settings.fraud_desk_fcm_token, "SentinelLayer: SIM Swap Alert", msg, payload)

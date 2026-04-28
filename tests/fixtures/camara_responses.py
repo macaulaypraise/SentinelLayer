@@ -1,0 +1,17 @@
+CLEAN_SIM_SWAP = {"swapped": False}
+CLEAN_FORWARDING = {"active": False}
+CLEAN_DEVICE_SWAP = {"swapped": False}
+CLEAN_NUM_VERIFY = {"verified": True}
+CLEAN_RECYCLING = {"recycled": False}
+CLEAN_KYC = {"match": True, "matchScore": 95}
+CLEAN_TENURE = {"tenureDays": 500}
+CLEAN_INSIGHTS = {"anomaly": False}
+CLEAN_LOC_VERIFY = {"inRegion": True}
+CLEAN_FREQ_LOC = {"baseline": "Lagos", "latitude": 6.5244, "longitude": 3.3792}
+CLEAN_POP_DENSITY = {"anomalous": False}
+CLEAN_REGION_COUNT = {"sparse": False}
+CLEAN_DEV_ID = {"newDevice": False}
+CLEAN_REACHABILITY = {"reachable": True}
+FRAUD_SIM_SWAP = {"swapped": True, "swappedAt": "2026-04-19T10:00:00Z"}
+FRAUD_FORWARDING = {"active": True, "type": "unconditional"}
+FRAUD_DEVICE_SWAP = {"swapped": True}

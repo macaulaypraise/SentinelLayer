@@ -1,4 +1,7 @@
-def fast_score(signals: dict) -> dict | None:
+from typing import Any
+
+
+def fast_score(signals: dict[str, Any]) -> dict[str, Any] | None:
     """Short-circuit HOLD for definitive fraud signals. Returns None → AI scoring."""
     if signals.get("call_forwarding_active"):
         return {

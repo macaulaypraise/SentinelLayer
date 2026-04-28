@@ -1,3 +1,5 @@
+from typing import Any
+
 import structlog
 from celery import Task
 
@@ -7,8 +9,8 @@ from app.workers.celery_app import celery_app
 log = structlog.get_logger()
 
 
-@celery_app.task(bind=True, max_retries=3, default_retry_delay=5)
-def handle_sim_swap_webhook(self: Task, payload: dict) -> None:
+@celery_app.task(bind=True, max_retries=3, default_retry_delay=5)  # type: ignore[untyped-decorator]
+def handle_sim_swap_webhook(self: Task, payload: dict[str, Any]) -> None:
     """Fires when Nokia NaC SIM Swap subscription push arrives."""
     try:
         from sqlalchemy import create_engine, select
@@ -41,5 +43,6 @@ def handle_sim_swap_webhook(self: Task, payload: dict) -> None:
                 {"type": "WEBHOOK_SIM_SWAP", "phone": phone, "swap_time": swap_time}
             )
         )
+
     except Exception as exc:
         raise self.retry(exc=exc) from exc

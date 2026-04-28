@@ -1,7 +1,8 @@
 import uuid
 from datetime import UTC, datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
+from typing import Any
 
 from sqlalchemy import (
     Boolean,
@@ -33,7 +34,7 @@ class Tenant(Base):
     country: Mapped[str] = mapped_column(String(10), nullable=False, default="NG")
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
-    metadata_: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
+    metadata_: Mapped[dict[str, Any]] = mapped_column("metadata", JSONB, default=dict)
 
 
 class APIKey(Base):
@@ -85,8 +86,8 @@ class Session(Base):
     risk_score: Mapped[int] = mapped_column(Integer, nullable=False)
     recommended_action: Mapped[str] = mapped_column(String(10), nullable=False)
     mode_triggered: Mapped[int] = mapped_column(Integer, nullable=False)
-    signals: Mapped[dict] = mapped_column(JSONB, nullable=False)
-    signal_drivers: Mapped[dict | None] = mapped_column(JSONB)
+    signals: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    signal_drivers: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     fast_path: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -107,7 +108,7 @@ class ConsentRecord(Base):
     authorised_by: Mapped[str] = mapped_column(String(50), nullable=False)
     authorised_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     location_retrieved: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    raw_consent_response: Mapped[dict | None] = mapped_column(JSONB)
+    raw_consent_response: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
 
 
 class Incident(Base):
@@ -119,20 +120,20 @@ class Incident(Base):
     phone_number: Mapped[str] = mapped_column(String(20), nullable=False)
     incident_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     incident_end: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    visit_locations: Mapped[dict | None] = mapped_column(JSONB)
-    home_zone: Mapped[dict | None] = mapped_column(JSONB)
+    visit_locations: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    home_zone: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     maps_url: Mapped[str | None] = mapped_column(Text)
     evidence_notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
 
 
-class RecommendedAction(str, Enum):
+class RecommendedAction(StrEnum):
     ALLOW = "ALLOW"
     STEP_UP = "STEP-UP"
     HOLD = "HOLD"
 
 
-class ConsentStatus(str, Enum):
+class ConsentStatus(StrEnum):
     GRANTED = "GRANTED"
     DENIED = "DENIED"
     PENDING = "PENDING"

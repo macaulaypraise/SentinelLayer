@@ -12,6 +12,8 @@ from app.config import settings
 
 
 def configure_tracing(app: FastAPI) -> None:
+    if settings.app_env == "test":
+        return
     resource = Resource.create({SERVICE_NAME: settings.otel_service_name})
     provider = TracerProvider(resource=resource)
     exporter = OTLPSpanExporter(endpoint=settings.otel_exporter_otlp_endpoint)

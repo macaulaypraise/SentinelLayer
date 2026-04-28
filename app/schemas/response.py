@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class Mode2Result(BaseModel):
     mode_triggered: int
     outcome: str
-    location: dict | None = None
+    location: dict[str, Any] | None = None
     consent_record_id: str | None = None
     alerted_parties: list[str] = []
     consent_status: str | None = None
@@ -29,5 +29,5 @@ class PostmortemResponse(BaseModel):
     mode_triggered: int
     maps_evidence_url: str
     locations_visited: int
-    home_zone: dict | None = None
+    home_zone: dict[str, Any] | None = None
     incident_id: str

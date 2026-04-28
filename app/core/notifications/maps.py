@@ -1,10 +1,14 @@
 from datetime import datetime
+from typing import Any
 
 from app.config import settings
 
 
 async def build_evidence_map(
-    visit_locations: dict, home_zone: dict, incident_start: datetime, incident_end: datetime
+    visit_locations: dict[str, Any],
+    home_zone: dict[str, Any],
+    incident_start: datetime,
+    incident_end: datetime,
 ) -> str:
     """Builds a Google Maps Static URL: red trail = fraudster path, green = victim home."""
     base = "https://maps.googleapis.com/maps/api/staticmap"

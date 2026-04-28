@@ -1,3 +1,5 @@
+from typing import Any
+
 from redis.asyncio import Redis
 
 from app.config import settings
@@ -7,7 +9,7 @@ from .client import nac_get, normalise
 CONSENT_PREFIX = "consent:"
 
 
-async def get_consent_status(phone: str, redis_client: Redis) -> dict:
+async def get_consent_status(phone: str, redis_client: Redis) -> dict[str, Any]:
     """Check consent from cache first, then Nokia NaC API."""
     e164 = normalise(phone)
     cached = await redis_client.get(f"{CONSENT_PREFIX}{e164}")

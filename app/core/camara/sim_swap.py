@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.config import settings
 
 from .client import nac_post, normalise
@@ -5,7 +7,7 @@ from .resilience import camara_retry
 
 
 @camara_retry
-async def check_sim_swap(phone: str, max_age_hours: int | None = None) -> dict:
+async def check_sim_swap(phone: str, max_age_hours: int | None = None) -> dict[str, Any]:
     return await nac_post(
         "/sim-swap/check",
         {
@@ -15,7 +17,7 @@ async def check_sim_swap(phone: str, max_age_hours: int | None = None) -> dict:
     )
 
 
-async def subscribe_sim_swap_webhook(phone: str, callback_url: str) -> dict:
+async def subscribe_sim_swap_webhook(phone: str, callback_url: str) -> dict[str, Any]:
     return await nac_post(
         "/sim-swap/subscriptions",
         {

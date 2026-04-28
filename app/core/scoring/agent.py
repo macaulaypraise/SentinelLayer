@@ -1,4 +1,5 @@
 import json
+from typing import Any, cast
 
 import httpx
 import structlog
@@ -23,7 +24,7 @@ Respond ONLY in valid JSON. No preamble. No markdown fences.
 """
 
 
-async def score_signals(signals: dict) -> dict:
+async def score_signals(signals: dict[str, Any]) -> dict[str, Any]:
     # Layer 1: rule-based fast path (no API call needed — sub-10ms)
     fast = fast_score(signals)
     if fast:
@@ -45,6 +46,6 @@ async def score_signals(signals: dict) -> dict:
             json=payload,
         )
         r.raise_for_status()
-    result = json.loads(r.json()["content"])
+    result = cast(dict[str, Any], json.loads(r.json()["content"]))
     log.info("ai_scored", score=result.get("risk_score"), action=result.get("recommended_action"))
     return result

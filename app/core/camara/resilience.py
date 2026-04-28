@@ -1,5 +1,5 @@
-# app/core/camara/resilience.py
 import logging
+from typing import Any, Protocol, cast
 
 import httpx
 from tenacity import (
@@ -10,6 +10,12 @@ from tenacity import (
     wait_exponential,
 )
 
+
+class _LoggerProtocol(Protocol):
+    def log(self, level: int, msg: str, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+        ...
+
+
 log = logging.getLogger(__name__)
 
 camara_retry = retry(
@@ -18,6 +24,6 @@ camara_retry = retry(
     retry=retry_if_exception_type(
         (httpx.TimeoutException, httpx.ConnectError, httpx.HTTPStatusError)
     ),
-    before_sleep=before_sleep_log(log, logging.WARNING),  # type: ignore[arg-type]
+    before_sleep=before_sleep_log(cast(_LoggerProtocol, log), logging.WARNING),
     reraise=True,
 )

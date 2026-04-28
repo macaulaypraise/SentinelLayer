@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import Any
 
 import sentry_sdk
 from fastapi import FastAPI
@@ -38,7 +39,7 @@ app.include_router(api_router)
 
 
 @app.get("/health", tags=["system"])
-async def health() -> dict:
+async def health() -> dict[str, Any]:
     return {
         "status": "healthy",
         "service": "sentinellayer",

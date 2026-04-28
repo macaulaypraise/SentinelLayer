@@ -1,5 +1,6 @@
 import logging
 import sys
+from typing import Any
 
 import structlog
 
@@ -8,7 +9,8 @@ from app.config import settings
 
 def configure_logging() -> None:
     level = logging.DEBUG if settings.app_env == "development" else logging.INFO
-    shared_processors = [
+
+    shared_processors: list[Any] = [
         structlog.contextvars.merge_contextvars,
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,

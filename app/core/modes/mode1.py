@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import Any
+from typing import Any, cast
 
 import structlog
 from redis.asyncio import Redis
@@ -56,9 +56,9 @@ async def run_mode1(
         return_exceptions=True,  # fail open — CAMARA error != transaction blocked
     )
 
-    def _safe(r: object) -> dict:  # type: ignore[return]
+    def _safe(r: object) -> dict[str, Any]:
         """Return result as dict, or empty dict if the CAMARA call failed."""
-        return r if isinstance(r, dict) else {}
+        return cast(dict[str, Any], r) if isinstance(r, dict) else {}
 
     # Safely unpack results
     sim = _safe(results[0])
