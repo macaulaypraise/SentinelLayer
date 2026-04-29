@@ -7,4 +7,7 @@ from .resilience import camara_retry
 @camara_retry
 async def check_device_swap(phone: str) -> dict[str, Any]:
     """IMSI-IMEI mismatch. Returns {swapped: bool, swappedAt: str|None}."""
-    return await nac_post("/device-swap/check", {"phoneNumber": normalise(phone)})
+    return await nac_post(
+        "/passthrough/camara/v1/device-swap/device-swap/v1/check",
+        {"phoneNumber": normalise(phone), "maxAge": 120},
+    )

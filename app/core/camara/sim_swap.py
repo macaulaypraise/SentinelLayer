@@ -9,7 +9,7 @@ from .resilience import camara_retry
 @camara_retry
 async def check_sim_swap(phone: str, max_age_hours: int | None = None) -> dict[str, Any]:
     return await nac_post(
-        "/sim-swap/check",
+        "/passthrough/camara/v1/sim-swap/sim-swap/v0/check",
         {
             "phoneNumber": normalise(phone),
             "maxAge": max_age_hours or settings.sim_swap_window_hours,
@@ -19,12 +19,12 @@ async def check_sim_swap(phone: str, max_age_hours: int | None = None) -> dict[s
 
 async def subscribe_sim_swap_webhook(phone: str, callback_url: str) -> dict[str, Any]:
     return await nac_post(
-        "/sim-swap/subscriptions",
+        "/passthrough/camara/v1/sim-swap/sim-swap/v0/subscriptions",
         {
             "phoneNumber": normalise(phone),
             "webhook": {
                 "notificationUrl": callback_url,
-                "notificationAuthToken": settings.nac_client_secret,
+                "notificationAuthToken": settings.nac_rapidapi_key,
             },
         },
     )

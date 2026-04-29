@@ -9,14 +9,9 @@ class Settings(BaseSettings):
     )
 
     # Nokia NaC
-    nac_client_id: str = ""
-    nac_client_secret: str = ""
-    nac_base_url: str = ""
-    nac_token_url: str = ""
-    nac_maas_endpoint: str = ""
-    nac_maas_api_key: str = ""
-    nac_request_url: str = ""
-    nac_app_name: str = ""
+    nac_base_url: str = "https://network-as-code.p-eu.rapidapi.com"
+    nac_rapidapi_key: str = ""
+    nac_rapidapi_host: str = "network-as-code.nokia.rapidapi.com"
 
     # Database
     database_url: str = "postgresql+asyncpg://sentinel:dev@localhost:5432/sentinellayer"

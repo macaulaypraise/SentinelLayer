@@ -1,8 +1,46 @@
-x-common: &common
-  env_file: [.env]
-  networks: [sentinel_net]
+x-common-env: &common-env
+  PYTHONUNBUFFERED: '1'
+  APP_ENV: development
 
 services:
+
+  api:
+    build: { context: ., target: runtime }
+    command: >
+      sh -c 'alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload'
+    ports: ['8000:8000']
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgresql+asyncpg://sentinel:dev@postgres:5432/sentinellayer
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    env_file: [.env]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+      kafka:    { condition: service_healthy }
+    volumes: [./app:/app/app, ./kafka:/app/kafka]
+    networks: [sentinel_net]
+    deploy:
+      resources: { limits: { memory: 512M } }
+
+  worker:
+    build: { context: ., target: runtime }
+    command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgresql+asyncpg://sentinel:dev@postgres:5432/sentinellayer
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    env_file: [.env]
+    depends_on:
+      api: { condition: service_started }
+    networks: [sentinel_net]
+    deploy:
+      resources: { limits: { memory: 256M } }
 
   postgres:
     image: postgres:16-alpine
@@ -14,7 +52,7 @@ services:
     volumes: [pg_data:/var/lib/postgresql/data]
     networks: [sentinel_net]
     healthcheck:
-      test: ['CMD-SHELL','pg_isready -U sentinel -d sentinellayer']
+      test: ['CMD-SHELL', 'pg_isready -U sentinel -d sentinellayer']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -26,13 +64,13 @@ services:
     volumes: [redis_data:/data]
     networks: [sentinel_net]
     healthcheck:
-      test: ['CMD','redis-cli','ping']
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       retries: 5
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
-    environment: {ZOOKEEPER_CLIENT_PORT: 2181}
+    environment: { ZOOKEEPER_CLIENT_PORT: 2181 }
     networks: [sentinel_net]
 
   kafka:
@@ -42,12 +80,12 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks: [sentinel_net]
     healthcheck:
-      test: ['CMD','kafka-broker-api-versions','--bootstrap-server','localhost:9092']
+      test: ['CMD', 'kafka-broker-api-versions', '--bootstrap-server', 'localhost:9092']
       interval: 10s
       retries: 10
 
@@ -57,4 +95,4 @@ volumes:
 
 networks:
   sentinel_net:
-   driver: bridge
+    driver: bridge

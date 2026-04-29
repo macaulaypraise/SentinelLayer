@@ -9,11 +9,11 @@ from .resilience import camara_retry
 async def check_kyc(phone: str, name: str, dob: date, address: str) -> dict[str, Any]:
     """Returns {match: bool, matchScore: int 0-100}. Text match vs MNO NIN records."""
     return await nac_post(
-        "/kyc-match",
+        "/passthrough/camara/v1/kyc-match/kyc-match/v0.3/match",
         {
             "phoneNumber": normalise(phone),
             "name": name,
-            "dateOfBirth": dob.isoformat(),
+            "birthdate": dob.isoformat(),
             "address": address,
         },
     )

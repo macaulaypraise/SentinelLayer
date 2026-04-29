@@ -1,14 +1,14 @@
 from datetime import date
 from typing import Any
 
-from .client import nac_get, normalise
+from .client import nac_post, normalise
 from .resilience import camara_retry
 
 
 @camara_retry
 async def check_recycling(phone: str, registered_at: date) -> dict[str, Any]:
     """Binary: was this number reassigned since registered_at?"""
-    return await nac_get(
-        "/number-recycling/check",
-        {"phoneNumber": normalise(phone), "sinceDate": registered_at.isoformat()},
+    return await nac_post(
+        "/passthrough/camara/v1/number-recycling/number-recycling/v0.2/check",
+        {"phoneNumber": normalise(phone), "specifiedDate": registered_at.isoformat()},
     )
