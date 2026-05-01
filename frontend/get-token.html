@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><title>Get FCM Token</title></head>
+<body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-messaging.js";
+
+  const app = initializeApp({
+    apiKey: "YOUR_API_KEY",
+    authDomain: "sentinellayer.firebaseapp.com",
+    projectId: "sentinellayer",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  });
+
+  const messaging = getMessaging(app);
+  getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" }).then(token => {
+    document.body.innerText = token;
+    console.log("FCM Token:", token);
+  });
+</script>
+</body>
+</html>

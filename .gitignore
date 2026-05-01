@@ -36,6 +36,7 @@ coverage.xml
 node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/get-token.html
 *.docx
 *.pdf
 firebase-service-account.json

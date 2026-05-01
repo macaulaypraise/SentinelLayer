@@ -24,7 +24,7 @@ export function SignalGrid({ signals }: SignalGridProps) {
         <div key={key}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-mono
             ${flagged ? 'bg-red-900/40 border border-red-700 text-red-300' : 'bg-slate-800 border border-slate-700 text-slate-400'}`}>
-          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${flagged ? 'bg-red-400' : 'bg-green-500'}`} />
+          <span className={`w-2 h-2 rounded-full shrink-0 ${flagged ? 'bg-red-400' : 'bg-green-500'}`} />
           {SIGNAL_LABELS[key] ?? key}
         </div>
       ))}
