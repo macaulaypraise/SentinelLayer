@@ -6,8 +6,7 @@ from .resilience import camara_retry
 
 @camara_retry
 async def verify_location(phone: str, expected_region: str) -> dict[str, Any]:
-    """Boolean only — is device in expected zone? No coordinates exposed."""
-    # Simulator device is located in Budapest — use those coordinates for TRUE result
+    # Simulator device is in Budapest — use those coords for TRUE result
     return await nac_post(
         "/location-verification/v1/verify",
         {

@@ -18,6 +18,7 @@ from tests.fixtures.camara_responses import (
     CLEAN_REACHABILITY,
     CLEAN_RECYCLING,
     CLEAN_REGION_COUNT,
+    CLEAN_ROAMING,
     CLEAN_SIM_SWAP,
     CLEAN_TENURE,
 )
@@ -111,6 +112,10 @@ async def test_clean_transaction_returns_allow(test_tenant_in_db: uuid.UUID) -> 
                 new=AsyncMock(return_value=CLEAN_REACHABILITY),
             ),
             patch(
+                "app.core.camara.device_roaming.check_roaming",
+                new=AsyncMock(return_value=CLEAN_ROAMING),
+            ),
+            patch(
                 "app.core.modes.mode1.score_signals",
                 new=AsyncMock(
                     return_value={
@@ -136,4 +141,4 @@ async def test_clean_transaction_returns_allow(test_tenant_in_db: uuid.UUID) -> 
     assert data["recommended_action"] in ["ALLOW", "STEP-UP"]
     assert "session_id" in data
     assert "signals" in data
-    assert len(data["signals"]) == 14
+    assert len(data["signals"]) == 15

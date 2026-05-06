@@ -22,4 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-get-token.html
+.get-token.html
+
+.env
+.vercel

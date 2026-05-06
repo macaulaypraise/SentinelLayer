@@ -6,9 +6,18 @@ import phonenumbers
 from app.config import settings
 from app.observability.metrics import camara_api_errors, camara_api_latency
 
+# Initialize a global client for connection pooling and keep-alive
+http_client = httpx.AsyncClient(
+    timeout=4.0, limits=httpx.Limits(max_keepalive_connections=100, max_connections=200)
+)
+
 
 def normalise(phone: str, region: str = "NG") -> str:
-    """Parse any format and return E.164."""
+    # 1. Bypass validation for Nokia sandbox numbers
+    if phone.startswith("+999"):
+        return phone
+
+    # 2. Proceed with standard validation for real numbers
     parsed = phonenumbers.parse(phone, region)
     if not phonenumbers.is_valid_number(parsed):
         raise ValueError(f"Invalid phone number: {phone}")
@@ -16,7 +25,6 @@ def normalise(phone: str, region: str = "NG") -> str:
 
 
 def _headers() -> dict[str, str]:
-    """RapidAPI auth — two headers, no OAuth2, no token exchange."""
     return {
         "x-rapidapi-key": settings.nac_rapidapi_key,
         "x-rapidapi-host": settings.nac_rapidapi_host,
@@ -31,14 +39,14 @@ async def nac_get(
     api_name = endpoint.lstrip("/").split("/")[0]
     with camara_api_latency.labels(api_name=api_name).time():
         try:
-            async with httpx.AsyncClient(timeout=10.0) as c:
-                r = await c.get(
-                    f"{settings.nac_base_url}{endpoint}",
-                    headers=_headers(),
-                    params=params or {},
-                )
-                r.raise_for_status()
-                return dict(r.json())
+            # Use the global client instead of opening a new socket
+            r = await http_client.get(
+                f"{settings.nac_base_url}{endpoint}",
+                headers=_headers(),
+                params=params or {},
+            )
+            r.raise_for_status()
+            return dict(r.json())
         except Exception as e:
             camara_api_errors.labels(api_name=api_name, error_type=type(e).__name__).inc()
             raise
@@ -51,14 +59,14 @@ async def nac_post(
     api_name = endpoint.lstrip("/").split("/")[0]
     with camara_api_latency.labels(api_name=api_name).time():
         try:
-            async with httpx.AsyncClient(timeout=10.0) as c:
-                r = await c.post(
-                    f"{settings.nac_base_url}{endpoint}",
-                    headers=_headers(),
-                    json=body,
-                )
-                r.raise_for_status()
-                return dict(r.json())
+            # Use the global client here as well
+            r = await http_client.post(
+                f"{settings.nac_base_url}{endpoint}",
+                headers=_headers(),
+                json=body,
+            )
+            r.raise_for_status()
+            return dict(r.json())
         except Exception as e:
             camara_api_errors.labels(api_name=api_name, error_type=type(e).__name__).inc()
             raise

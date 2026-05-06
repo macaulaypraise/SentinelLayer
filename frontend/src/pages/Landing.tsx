@@ -34,10 +34,28 @@ export default function Landing() {
             className='bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-lg font-semibold text-lg'>
             See It Live
           </button>
-          <a href='http://localhost:8000/docs' target='_blank' rel="noreferrer"
+          <a href={`${import.meta.env.VITE_API_BASE_URL}/docs`} target='_blank' rel="noreferrer"
             className='border border-slate-600 hover:border-slate-400 px-8 py-3 rounded-lg font-semibold text-lg'>
             API Docs
           </a>
+        </div>
+
+        {/* 1. Hero API Response Preview */}
+        <div className='mt-12 max-w-lg mx-auto bg-slate-900 border border-slate-700 rounded-xl p-4 text-left font-mono text-xs'>
+          <div className='flex items-center gap-2 mb-3'>
+            <span className='w-2 h-2 rounded-full bg-green-400 animate-pulse'/>
+            <span className='text-slate-500'>Live API Response — 847ms</span>
+          </div>
+          <pre className='text-green-400'>{`{
+  "risk_score": 92,
+  "recommended_action": "HOLD",
+  "fast_path": true,
+  "signal_drivers": [
+    "sim_swapped_recent",
+    "device_swapped",
+    "device_roaming_anomaly"
+  ]
+}`}</pre>
         </div>
       </section>
 
@@ -45,26 +63,90 @@ export default function Landing() {
       <section id='problem' className='bg-slate-900/50 py-16'>
         <div className='max-w-5xl mx-auto px-8'>
           <h2 className='text-3xl font-bold text-center mb-12'>The attack chain is broken</h2>
-          <div className='grid grid-cols-3 gap-6'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6'>
             {[
-              { stat: '₦320B', label: 'Lost to digital fraud 2023–2025' },
-              { stat: '704%', label: 'Rise in deepfake attacks (2023)' },
-              { stat: '25%', label: 'Of all fraud is SIM swap' },
-            ].map(({ stat, label }) => (
+              {
+                stat: '₦320B',
+                label: 'Lost to digital fraud 2023–2025',
+                sub: 'SentinelLayer blocks this at the network layer'
+              },
+              {
+                stat: '704%',
+                label: 'Rise in deepfake attacks (2023)',
+                sub: 'Biometric liveness is now structurally broken'
+              },
+              {
+                stat: '25%',
+                label: 'Of all fraud is SIM swap',
+                sub: 'Intercepted in <300ms before authentication begins'
+              },
+            ].map(({ stat, label, sub }) => (
               <div key={stat} className='bg-slate-800 rounded-xl p-6 text-center border border-slate-700'>
                 <div className='text-4xl font-bold text-red-400 mb-2'>{stat}</div>
                 <div className='text-slate-400 text-sm'>{label}</div>
+                {/* 2. Stats Context Line */}
+                <div className='text-xs text-slate-500 mt-2 border-t border-slate-700 pt-2'>
+                  {sub}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* 3. How It Works Section */}
+      <section id='solution' className='py-16 max-w-5xl mx-auto px-8'>
+        <h2 className='text-3xl font-bold text-center mb-12'>
+          Three modes. One integration.
+        </h2>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6'>
+          {[
+            {
+              mode: 'M1',
+              name: 'Pre-emptive',
+              borderColor: 'border-blue-800/40',
+              textColor: 'text-blue-400',
+              desc: '15 Nokia NaC signals checked in parallel in under 300ms. Silent. Zero user friction. Runs on every transaction.',
+            },
+            {
+              mode: 'M2',
+              name: 'Live Enforcement',
+              borderColor: 'border-amber-800/40',
+              textColor: 'text-amber-400',
+              desc: 'Consent-gated precise location retrieved. Fraud desk, telecom, and enforcement alerted simultaneously.',
+            },
+            {
+              mode: 'M3',
+              name: 'Post-Mortem',
+              borderColor: 'border-purple-800/40',
+              textColor: 'text-purple-400',
+              desc: 'Historical device trail rendered as a court-ready Google Maps evidence map for law enforcement.',
+            },
+          ].map(({ mode, name, borderColor, textColor, desc }) => (
+            <div key={mode}
+              className={`bg-slate-800 rounded-xl p-6 border ${borderColor}`}>
+              <div className={`${textColor} text-2xl font-bold mb-1`}>{mode}</div>
+              <div className='font-semibold mb-3'>{name}</div>
+              <p className='text-slate-400 text-sm'>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Pricing */}
       <section id='pricing' className='py-16'>
         <div className='max-w-5xl mx-auto px-8'>
+
+          {/* 4. Integration Line */}
+          <div className='text-center py-8 border-y border-slate-800 mb-16'>
+            <p className='text-slate-400 text-sm mb-3'>One endpoint. Any fintech. Any SSA network.</p>
+            <code className='bg-slate-900 text-green-400 px-4 py-2 rounded-lg text-sm font-mono border border-slate-700'>
+              POST /v1/sentinel/check → risk_score, recommended_action, signals
+            </code>
+          </div>
+
           <h2 className='text-3xl font-bold text-center mb-12'>Pricing</h2>
-          <div className='grid grid-cols-3 gap-6'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6'>
             {[
               { tier: 'Developer', price: 'Free', desc: '10,000 checks/month', cta: 'Start Free', highlight: false },
               { tier: 'Business', price: '$0.002/check', desc: 'Volume tiers, SLA', cta: 'Contact Sales', highlight: true },
@@ -84,6 +166,17 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* 5. Footer */}
+      <footer className='border-t border-slate-800 mt-16 py-8 text-center text-slate-500 text-xs'>
+        <div className='flex justify-center gap-8 mb-4'>
+          <span>🏆 Africa Ignite Hackathon 2026</span>
+          <span>📡 GSMA Open Gateway</span>
+          <span>🔷 Nokia Network-as-Code</span>
+          <span>🌍 Theme 1: Financial Inclusion</span>
+        </div>
+        <p>SentinelLayer — Network-native fraud intelligence for Sub-Saharan Africa</p>
+      </footer>
     </div>
   )
 }

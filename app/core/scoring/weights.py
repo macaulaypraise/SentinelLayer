@@ -8,6 +8,7 @@ SIGNAL_WEIGHTS: dict[str, int] = {
     "kyc_tenure_short": 15,
     "location_outside_region": 15,
     "device_unreachable": 15,
+    "device_roaming_anomaly": 12,
     "customer_insight_spike": 10,
     "population_density_anomaly": 8,
     "region_device_sparse": 7,

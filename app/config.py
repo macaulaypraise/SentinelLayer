@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
 
     # Nokia NaC
@@ -15,9 +15,11 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = "postgresql+asyncpg://sentinel:dev@localhost:5432/sentinellayer"
+    test_database_url: str = "postgresql+asyncpg://sentinel:dev@localhost:5432/sentinellayer_test"
 
     # Redis
     redis_url: str = "redis://localhost:6379/0"
+    test_redis_url: str = "redis://localhost:6379/9"
     celery_broker_url: str = "redis://localhost:6379/1"
     celery_result_backend: str = "redis://localhost:6379/2"
 
@@ -27,6 +29,8 @@ class Settings(BaseSettings):
     kafka_sasl_password: str = ""
     kafka_fraud_signals_topic: str = "sentinel.fraud.signals"
     kafka_mode2_topic: str = "sentinel.mode2.triggers"
+    kafka_sasl_mechanism: str = "PLAIN"
+    kafka_security_protocol: str = "SASL_SSL"
 
     # Observability
     otel_exporter_otlp_endpoint: str = "http://localhost:4317"
@@ -41,6 +45,7 @@ class Settings(BaseSettings):
 
     # Google Maps
     google_maps_api_key: str = ""
+    gemini_api_key: str = ""
 
     # Application
     risk_threshold_mode2: int = 45

@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import Any
+from typing import cast as type_cast
 
 import structlog
 from redis.asyncio import Redis
@@ -51,7 +52,10 @@ async def run_mode2(
         # ── Step B: Retrieve precise MNO coordinates ──
         location: dict[str, Any] = await retrieve_live_location(phone)
         record.location_retrieved = True
-        record.raw_consent_response = consent.get("raw")
+        raw = consent.get("raw")
+        record.raw_consent_response = type_cast(
+            dict[str, Any] | None, raw if isinstance(raw, dict) else None
+        )
         await db.commit()
 
         # ── Step C: Three-way simultaneous notification ──

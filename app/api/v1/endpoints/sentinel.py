@@ -41,7 +41,7 @@ async def sentinel_check(
         expected_region=req.expected_region,
     )
 
-    mode1_result = await run_mode1(mode1_req, redis, tenant_id)
+    mode1_result = await run_mode1(mode1_req, session_id, redis, db, tenant_id)
 
     session = DBSession(
         id=uuid.UUID(session_id),

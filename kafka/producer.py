@@ -16,8 +16,8 @@ def _get_producer() -> Producer:
         if settings.kafka_sasl_username:
             conf.update(
                 {
-                    "sasl.mechanism": "PLAIN",
-                    "security.protocol": "SASL_SSL",
+                    "sasl.mechanism": settings.kafka_sasl_mechanism,
+                    "security.protocol": settings.kafka_security_protocol,
                     "sasl.username": settings.kafka_sasl_username,
                     "sasl.password": settings.kafka_sasl_password,
                 }

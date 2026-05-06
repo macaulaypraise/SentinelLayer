@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: sentinellayer
+    static_configs:
+      - targets: ["api:8000"] # internal docker network
+    metrics_path: /metrics
+
+remote_write:
+  - url: https://prometheus-prod-xx.grafana.net/api/prom/push
+    basic_auth:
+      username: YOUR_GRAFANA_USER_ID
+      password: YOUR_GRAFANA_API_KEY

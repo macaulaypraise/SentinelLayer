@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -54,13 +55,18 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    # 1. Force fetch from the OS environment
+    raw_url = os.getenv("DATABASE_URL")
+    if not raw_url:
+        raw_url = str(settings.database_url)
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
+    # 2. Strip the async driver for Alembic
+    if raw_url and "+asyncpg" in raw_url:
+        sync_url = raw_url.replace("+asyncpg", "")
+    else:
+        sync_url = raw_url
 
-    """
-    config.set_main_option("sqlalchemy.url", settings.database_url.replace("+asyncpg", ""))
+    config.set_main_option("sqlalchemy.url", sync_url)
 
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
@@ -70,7 +76,6 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
-
         with context.begin_transaction():
             context.run_migrations()
 

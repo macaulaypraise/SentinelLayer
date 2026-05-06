@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any
-
-from app.config import settings
+from urllib.parse import quote
 
 
 async def build_evidence_map(
@@ -10,31 +9,53 @@ async def build_evidence_map(
     incident_start: datetime,
     incident_end: datetime,
 ) -> str:
-    """Builds a Google Maps Static URL: red trail = fraudster path, green = victim home."""
-    base = "https://maps.googleapis.com/maps/api/staticmap"
-    params = [f"key={settings.google_maps_api_key}", "size=800x600", "maptype=roadmap"]
+    """
+    Builds an interactive Google Maps Directions URL.
+    - NO API KEY REQUIRED.
+    - NO BILLING REQUIRED.
+    - Preserves the fraudster path and home baseline.
+    """
+    locations = visit_locations.get("locations", []) if visit_locations else []
 
-    # Handle visit locations
-    locations = visit_locations.get("locations", [])
     if not locations:
-        return ""  # Return an empty string if no locations exist
+        return ""
 
-    # Add markers for each location
-    for i, loc in enumerate(locations):
-        lat, lng = loc.get("latitude"), loc.get("longitude")
-        if lat and lng:  # Ensure latitude and longitude are available
-            params.append(f"markers=color:red|label:{i + 1}|{lat},{lng}")
+    # Filter and validate coordinate points
+    path_points = []
+    for loc in locations:
+        if isinstance(loc, dict):
+            lat, lng = loc.get("latitude"), loc.get("longitude")
+            if lat and lng:
+                path_points.append(f"{lat},{lng}")
 
-    # Add home zone marker if available
-    if home_zone.get("latitude") and home_zone.get("longitude"):
-        params.append(
-            f"markers=color:green|label:H|{home_zone['latitude']},{home_zone['longitude']}"
+    if not path_points:
+        return ""
+
+    # Determine the "Home" baseline if it exists
+    home_lat = home_zone.get("latitude") if isinstance(home_zone, dict) else None
+    home_lng = home_zone.get("longitude") if isinstance(home_zone, dict) else None
+
+    # Scenario A: Multiple locations (Build a full interactive trail)
+    if len(path_points) > 1:
+        # Start at the victim's home (if known) or the first fraud point
+        origin = f"{home_lat},{home_lng}" if (home_lat and home_lng) else path_points[0]
+        # End at the most recent fraudster location
+        destination = path_points[-1]
+        # Use intermediate points as waypoints
+        waypoints = "|".join(path_points[1:-1]) if len(path_points) > 2 else ""
+
+        url = (
+            f"https://www.google.com/maps/dir/?api=1"
+            f"&origin={quote(origin)}"
+            f"&destination={quote(destination)}"
         )
+        if waypoints:
+            url += f"&waypoints={quote(waypoints)}"
 
-    # Add path if there are multiple locations
-    if len(locations) > 1:
-        path = "|".join(f"{loc['latitude']},{loc['longitude']}" for loc in locations)
-        params.append(f"path=color:0xff0000ff|weight:3|{path}")
+        url += "&travelmode=driving"
+        return url
 
-    # Return the final URL
-    return f"{base}?" + "&".join(params)
+    # Scenario B: Single location (Simple marker)
+    else:
+        lat_lng = path_points[0]
+        return f"https://www.google.com/maps/search/?api=1&query={quote(lat_lng)}"

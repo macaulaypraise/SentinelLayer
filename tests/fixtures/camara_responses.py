@@ -12,6 +12,7 @@ CLEAN_POP_DENSITY = {"anomalous": False}
 CLEAN_REGION_COUNT = {"sparse": False}
 CLEAN_DEV_ID = {"newDevice": False}
 CLEAN_REACHABILITY = {"reachable": True}
+CLEAN_ROAMING = {"roaming": False}
 FRAUD_SIM_SWAP = {"swapped": True, "swappedAt": "2026-04-19T10:00:00Z"}
 FRAUD_FORWARDING = {"active": True, "type": "unconditional"}
 FRAUD_DEVICE_SWAP = {"swapped": True}

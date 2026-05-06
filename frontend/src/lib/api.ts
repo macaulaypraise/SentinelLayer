@@ -26,10 +26,13 @@ export interface CheckResponse {
   signal_drivers: string[]
   fast_path: boolean
   duration_ms?: number
+  source?: string
   mode2?: {
     outcome: string
     location?: object
     alerted_parties?: string[]
+    consent_status?: string
+    location_retrieved?: boolean
   }
 }
 

@@ -27,7 +27,7 @@ async def test_tenant_in_db() -> AsyncGenerator[uuid.UUID, None]:
     Tears it down after each test.
     """
     engine = create_async_engine(
-        settings.database_url,
+        settings.test_database_url,
         pool_pre_ping=True,
     )
     async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
@@ -40,7 +40,7 @@ async def test_tenant_in_db() -> AsyncGenerator[uuid.UUID, None]:
             country="NG",
             is_active=True,
         )
-        session.add(tenant)
+        await session.merge(tenant)
         await session.commit()
 
     yield TEST_TENANT_ID
